@@ -1,5 +1,7 @@
 const express = require("express");
 const {connectDb} = require("./Config/dbConfig")
+
+
 const app = express();
 
 require('dotenv').config();
@@ -19,6 +21,10 @@ app.use('/api/auth', require('./Routes/authRoutes'));
 
 app.use('/api/adm', require('./Routes/adminRoutes'));
 
-app.use('/api/serviceClient', require('./Routes/seviceClientRoutes'));
+app.use('/api/cat', require('./Routes/categoryRoutes'));
 
-app.use('/api/client', require('./Routes/clientRoutes'))
+app.use('/api/order', require('./Routes/serviceOderRoutes'));
+
+app.use('/api/serv', require('./Routes/serviceRoutes'));
+
+app.use('/api/worker', require('./Routes/workersRoutes'))

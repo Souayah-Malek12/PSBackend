@@ -1,42 +1,30 @@
-const orderModel = require("../models/OrderServ");
+const userModel = require("../models/User")
 
 
-
-const serviceByCat = async (req, res)=>{
-    try{    
-        const {catId}= req.params;
-        const services = await orderModel.find({category : catId});
-        if(!services){
-            return res.status(404).send({
-                success: false,
-                message: "no availble service already , Coming soon"
-            });
-        }
-        return res.status(200).send({
-            success: true,
-            message: "Services List",
-            services
-        });
-        
-    }catch(err){
-        return res.status(500).send({
-            success: false,
-            message: "Error in serviceByCat api"
-        });
-    }
-}
-
-
-const passOrder = async()=>{
+const getAllClients =async(req, res)=>{
     try{
-        const {categoryId} = req.params;
-
-        const {clientId, details}= req.body;
-    }catch(err){
-        return res.status(500).send({
-            success: false,
-            message: "Error in passOrder api"
+      const clientsList = await userModel.find({role : "Client"});
+      if(!clientsList){
+        return res.status(404).json({
+          success: true,
+          message: "Clients List is empty",
+          error: err.message,
         });
+      }
+      return res.status(200).json({
+        success: true,
+        message: "Clients List",
+        clientsList
+      });
+    }catch(err){
+      return res.status(500).json({
+        success: false,
+        message: "Error in get all Clients user  Api",
+        error: err.message,
+      });
     }
-}
-module.exports = {passOrder, serviceByCat}
+  }
+
+
+
+module.exports = {getAllClients}

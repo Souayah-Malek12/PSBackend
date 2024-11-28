@@ -18,9 +18,10 @@ const UserSchema =  mongoose.Schema({
         type :Number,
         required: true
     },
-    address: {
-        type: String,
-        required: true
+    coordinates :{
+        type : [Number],
+        required : true,
+        index: '2dsphere'
     },
     profession : {
         type: String,

@@ -6,7 +6,7 @@ const registreController = async (req, res) => {
     try {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-        const { name, email, password, phone, address,profession,role , jobs } = req.body;
+        const { name, email, password, phone, coordinates ,profession,role , jobs } = req.body;
 
         if (!name) {
             return res.send({ error: "Name is Required" });
@@ -21,8 +21,8 @@ const registreController = async (req, res) => {
           if (!phone) {
             return res.send({ error: "Phone no is Required" });
           }
-          if (!address) {
-            return res.send({ error: "Address is Required" });
+          if (coordinates.length<2) {
+            return res.send({ error: "Cordinates are required Latitude and longitude is Required" });
           }
           if (!profession) {
             return res.send({ error: "Profession is Required" });
@@ -53,7 +53,7 @@ const registreController = async (req, res) => {
                 email,
                 password: hashedPassword,
                 phone,
-                address,
+                coordinates,
                 profession,
                 role,
                 isAcceptedByAdmin : true,
@@ -71,7 +71,7 @@ const registreController = async (req, res) => {
             email,
             password: hashedPassword,
             phone,
-            address,
+            coordinates,
             profession,
             role,
             jobs

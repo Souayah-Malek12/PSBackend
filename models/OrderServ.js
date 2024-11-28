@@ -3,10 +3,14 @@ const mongoose = require("mongoose")
 const OrderServSchema = mongoose.Schema({
     name : {
         type: String,
-        unique: true
     },
     details : {
         type: String,
+    },
+    coordinates :{
+        type : [Number],
+        required : true,
+        index: '2dsphere'
     },
     category : {
         type: mongoose.Schema.Types.ObjectId,
@@ -14,11 +18,12 @@ const OrderServSchema = mongoose.Schema({
     },
     clientId : {
         type: mongoose.Schema.Types.ObjectId,
-        ref : "user"
+        ref : "user",
     },
     workerId : {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "user"
+        ref: "user",
+        default : null
     },
     status : {
         type: String,
@@ -27,7 +32,7 @@ const OrderServSchema = mongoose.Schema({
     },
     desiredDate: {
         type: Date,
-        default :Date.now
+       
     },
     createdAt: {
         type: Date,
