@@ -123,16 +123,18 @@ const registreController = async (req, res) => {
             return res.status(201).send({
                 success : true,
                 message : "Logged In Successfully",
+                id: userExist._id,
                 name: userExist.name,
                 email :  userExist.email,
                 phone : userExist.phone,
                 address: userExist.address,
                 profession : userExist.profession,
                 role: userExist.role,
-                token
-                
+                token,
             })
         }
+        console.log(req.user);
+
         userExist.password = undefined;
        
         }catch(err){

@@ -1,8 +1,10 @@
 const express = require("express");
 const {connectDb} = require("./Config/dbConfig")
-
-
+const cors = require("cors")
 const app = express();
+
+app.use(cors())
+
 
 require('dotenv').config();
 app.use(express.json());
@@ -28,3 +30,5 @@ app.use('/api/order', require('./Routes/serviceOderRoutes'));
 app.use('/api/serv', require('./Routes/serviceRoutes'));
 
 app.use('/api/worker', require('./Routes/workersRoutes'))
+
+app.use('/api/conversation', require('./Routes/ConversationRoutes'))
