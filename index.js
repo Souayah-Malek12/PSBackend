@@ -3,6 +3,8 @@ const {connectDb} = require("./Config/dbConfig")
 const cors = require("cors")
 const app = express();
 
+
+
 app.use(cors())
 
 
@@ -15,6 +17,49 @@ app.listen(PORT,()=>{
 })
 
 connectDb();
+//io 
+const io = require("socket.io")(5001, {
+    cors :{
+        origin : 'http://localhost:5173',
+        methods: ["GET", "POST"]
+    }
+})
+
+let users = [];
+io.on('connection', socket=>{
+    console.log(socket.id)
+    socket.on('addUser', userId=>{
+        const userExist = users.find(user =>user.userId === userId)
+        if(!userExist){
+            const user = {userId, socketId: socket.id};
+            users.push(user);
+            io.emit('getUsers', users);
+        }
+       
+    })
+
+    socket.on('sendMessage',  ({ conversationId, senderId , message , rId  })=>{
+        const receiver = users.find(user => user.userId === rId);
+        if(receiver){
+            socket.to(receiver.socketId).emit('getMessage', {
+                conversationId,
+                senderId,
+                message,
+                rId
+            });
+            console.log("receiverId",rId)
+
+                console.log("Message received on server:", { conversationId, senderId , message , rId });
+            
+        }
+    })
+
+    socket.on('disconnect', () => {
+        users = users.filter(user => user.socketId !== socket.id);
+        io.emit('getUsers', users)
+    })    
+})
+//end of socket part
 app.get('/',(req, res)=>{
     res.send("Hello to project");
 }); 

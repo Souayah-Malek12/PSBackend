@@ -72,11 +72,14 @@ const sendMessageController = async(req, res)=>{
         }
         const newMessage = await messageModel.create({conversationId, senderId, message});
 
+        console.log("send Messagecontroller",{conversationId, senderId, message});
+
         return res.status(200).send({
             success : true,
             message:' Message sent successfully',
             newMessage
         })
+       
     }catch(err){
         return  res.status(500).send({
             success : false,
@@ -96,8 +99,7 @@ const getMessageController =async(req, res)=>{
             
         })
     )  
-     console.log(messageUserData);
-        return  res.status(201).send({
+            return  res.status(201).send({
             success : true,
             message : "Conversation ",
             messageUserData
