@@ -8,9 +8,15 @@ const OrderServSchema = mongoose.Schema({
         type: String,
     },
     coordinates :{
-        type : [Number],
-        required : true,
-        index: '2dsphere'
+        type: {
+            type: String, // Must specify type
+            enum: ["Point"], // GeoJSON object type
+            required: true,
+        },
+        coordinates: {
+            type: [Number], // Array of numbers (longitude, latitude)
+            required: true,
+        }
     },
     category : {
         type: mongoose.Schema.Types.ObjectId,
@@ -30,10 +36,14 @@ const OrderServSchema = mongoose.Schema({
         enum: ["Pending", "Accepted", "in progress", "completed"],
         default : "Pending"
     },
-    desiredDate: {
+    desiredTime: {
         type: Date,
        
     },
+    desiredDate: {
+        type: Date
+    }
+    ,
     createdAt: {
         type: Date,
         default :Date.now
@@ -47,5 +57,5 @@ const OrderServSchema = mongoose.Schema({
     }
 
 })
-
+OrderServSchema.index({ coordinates: "2dsphere" });
 module.exports = mongoose.model("orderSevice", OrderServSchema);

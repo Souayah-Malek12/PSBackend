@@ -18,7 +18,7 @@ const getAllServiceOrders = async(req, res)=>{
     })
     }catch(err){
       return  res.status(500).send({
-        success : false,
+        success : false,    
         message : "Error in  getAllServiceOrders api ",
         error : err.message
     })
@@ -52,44 +52,78 @@ const getAllServiceOrders = async(req, res)=>{
   const passOrderController = async(req, res)=>{
     try{
         const {sId} = req.params;
-        let {details, coordinates , category, desiredDate}= req.body;
+        let {details, coordinates , category,desiredTime, desiredDate }= req.body;
+
+        const date = new Date(desiredDate);
+        const time = new Date(desiredTime);
+        const now = new Date();
+
         const clientId = req.user.id;
+        console.log(coordinates)
+        if(!Array.isArray(coordinates.coordinates) ||  coordinates.coordinates.length!=2){
+            return res.status(400).send({
+                success: false,
+                message: "Verfiy your coordinates",
+            });
+        }
         if(desiredDate ===""){
             desiredDate =  Date.now();
         }
+        if(desiredTime < now){
+            return res.status(400).send({
+                success : false,
+                message:'enter a valid time',
+                error : err.message
+            })
+        }   
+        if(desiredDate< now.setHours(0,0,0,0)){
+            return res.status(400).send({
+                success : false,
+                message:'enter a valid date',
+                error : err.message
+            })
+        }
         const  serv = await serviceModel.findById(sId);        
         const name = serv.name;
+
         const order = await orderModel.create({
             name,
             details,
             coordinates,
             category,
             clientId,
-            desiredDate
-        })
-
-      
-
-        req.io.emit("new order",{
-            orderId: order._id,
-            name: order.name,
-            details: order.details,
-            coordinates: order.coordinates,
-            category: order.category,
-            clientId: order.clientId,
-            desiredDate: order.desiredDate,
-
+            desiredTime: time,
+            desiredDate: date
         })
 
         return res.status(201).send({
             success: true,
-            message : "Service Order passed Successfully ,Our workers will treat you demand soon ",
+            message : "Service Order passed Successfully ,Our workers will treat your demand soon ",
             order
+        })
+    }catch(err){
+        console.log(err)
+        return  res.status(500).send({
+            success : false,
+            message : "Error in  passOrderController api ",
+            error : err.message
+        })
+    }
+  }
+
+
+  const deleteOrderController = async(req, res)=>{
+    try{
+        const {ordId} = req.params;
+        await orderModel.findByIdAndDelete(ordId);
+        return res.status(200).send({
+            success : true,
+            message : "order deleted successfully",
         })
     }catch(err){
         return  res.status(500).send({
             success : false,
-            message : "Error in  passOrderController api ",
+            message : "Error in  deleteOrderController api ",
             error : err.message
         })
     }
@@ -122,4 +156,5 @@ const getAllServiceOrders = async(req, res)=>{
     }
   }
   
-  module.exports = { getAllServiceOrders, getServiceOrderByStatus, passOrderController, updateOrderController}
+  module.exports = { getAllServiceOrders, getServiceOrderByStatus, 
+        passOrderController, updateOrderController, deleteOrderController}
