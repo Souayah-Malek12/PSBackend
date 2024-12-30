@@ -130,6 +130,7 @@ const registreController = async (req, res) => {
                 address: userExist.address,
                 profession : userExist.profession,
                 role: userExist.role,
+                coordinates: userExist.coordinates,
                 token,
             })
         }

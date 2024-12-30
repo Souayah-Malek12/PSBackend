@@ -50,6 +50,10 @@ const UserSchema =  mongoose.Schema({
         type: Number,
         default : 0
     },
+    availibilty : {
+        type : Boolean,
+        default: 0
+    },
     isAcceptedByAdmin: {
         type: Boolean,
         default : false
@@ -58,6 +62,8 @@ const UserSchema =  mongoose.Schema({
         type: Date,
         default : null
     }
-})
+},{timestamps : true});
+
+UserSchema.index({ location: '2dsphere' });
 
 module.exports = mongoose.model("user", UserSchema);

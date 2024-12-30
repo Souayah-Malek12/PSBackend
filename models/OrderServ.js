@@ -1,61 +1,60 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
 const OrderServSchema = mongoose.Schema({
-    name : {
+    name: {
         type: String,
     },
-    details : {
+    details: {
         type: String,
     },
-    coordinates :{
+    coordinates: {
         type: {
-            type: String, // Must specify type
-            enum: ["Point"], // GeoJSON object type
+            type: String, // GeoJSON object type
+            enum: ["Point"], // Must be 'Point'
             required: true,
         },
         coordinates: {
             type: [Number], // Array of numbers (longitude, latitude)
             required: true,
-        }
+        },
     },
-    category : {
+    category: {
         type: mongoose.Schema.Types.ObjectId,
-        ref : "ServiceCategory"
+        ref: "ServiceCategory",
     },
-    clientId : {
-        type: mongoose.Schema.Types.ObjectId,
-        ref : "user",
-    },
-    workerId : {
+    clientId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "user",
-        default : null
     },
-    status : {
+    workerId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user",
+        default: null,
+    },
+    status: {
         type: String,
         enum: ["Pending", "Accepted", "in progress", "completed"],
-        default : "Pending"
+        default: "Pending",
     },
     desiredTime: {
         type: Date,
-       
     },
     desiredDate: {
-        type: Date
-    }
-    ,
+        type: Date,
+    },
     createdAt: {
         type: Date,
-        default :Date.now
+        default: Date.now,
     },
     acceptedAt: {
         type: Date,
-        default :Date.now
+        default: Date.now,
     },
-    finishedAt :{
+    finishedAt: {
         type: Date,
-    }
+    },
+});
 
-})
-OrderServSchema.index({ coordinates: "2dsphere" });
-module.exports = mongoose.model("orderSevice", OrderServSchema);
+OrderServSchema.index({ coordinates: "2dsphere" }); // 2dsphere index for geospatial queries
+
+module.exports = mongoose.model("orderService", OrderServSchema);
