@@ -22,10 +22,10 @@ const getServByCatController = async(req, res)=>{
   const createServController = async(req, res)=>{
     try{
       const {name } = req.body;
-      const {categoryId} = req.params;
+      const {category} = req.params;
       
       const newService = await  serviceModel.create({
-        name , category : categoryId
+        name , category 
       });
       return  res.status(201).send({
         success : true,

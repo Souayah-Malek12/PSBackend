@@ -4,9 +4,10 @@ const userModel = require("../models/User");
 ;
 
 const getNearestOrders = async (req, res) => {
-    const { coordinates, catId } = req.body;
-
-    // Check if coordinates are provided and in the correct format
+    const { coordinates } = req.body;   //got from login and setted in local storge in the back end
+    const catId = await userModel.findById(req.user.id);
+    
+     // Check if coordinates are provided and in the correct format
     if (!coordinates || coordinates.length !== 2) {
         return res.status(400).json({
             success: false,
@@ -14,23 +15,21 @@ const getNearestOrders = async (req, res) => {
         });
     }
 
-    const [longitude, latitude] = coordinates; // Destructure coordinates to separate longitude and latitude
-
+    const [longitude, latitude] = coordinates; 
     try {
-        // Fetch all pending orders for the given category, sorted by proximity
         const nearestOrders = await orderModel.find({
-            category: catId,
             status: 'Pending',
+            category : catId.profession ,
             coordinates: {
                 $near: {
                     $geometry: {
                         type: "Point",
                         coordinates: [longitude, latitude], // [longitude, latitude]
                     },
-                    $maxDistance: 10000 // Optional: Maximum distance in meters (e.g., 10 km)
+                    $maxDistance: 1000000 // Optional: Maximum distance in meters (e.g., 10 km)
                 }
             }
-        }).sort({ "coordinates": 1 }); // Sort by proximity (closest first)
+        }).sort({ "coordinates": 1 }) // Sort by proximity (closest first)
 
         if (nearestOrders.length === 0) {
             return res.status(404).json({
@@ -54,13 +53,6 @@ const getNearestOrders = async (req, res) => {
 };
 
 
-
-
-  
-
-
-
-  
 
 ///////////////////////////////////////://///////////////
 const getAllServiceOrders = async (req, res) => {
@@ -179,6 +171,14 @@ const passOrderController = async (req, res) => {
 const deleteOrderController = async (req, res) => {
   try {
     const { ordId } = req.params;
+    const order = orderModel.findById(ordId);
+    if(order.status !='Pending'){
+      return res.status(409).send({
+        success : treu,
+        message : "Order already in charge , can't be deleted",
+
+      })
+    }
     await orderModel.findByIdAndDelete(ordId);
     return res.status(200).send({
       success: true,
@@ -195,7 +195,7 @@ const deleteOrderController = async (req, res) => {
 
 const updateOrderController = async (req, res) => {
   try {
-    const { state } = req.body;
+    const { name, details, coordinates, desiredTime, desiredDate } = req.body;
     const { orderId } = req.params;
     const orderExist = await orderModel.findById(orderId);
     if (!orderExist) {
@@ -203,8 +203,20 @@ const updateOrderController = async (req, res) => {
         success: false,
         message: "order doesn't exist",
       });
+    }else if(orderExist.status !='Pending'){
+      return res.status(409).send({
+        success : true,
+        message : "Order already in charge , can't be modified",
+        
+      })
     }
-    orderExist.status = state;
+    if(name) orderExist.name=name;
+    if(details) orderExist.details=details;
+    if(coordinates) orderExist.coordinates=coordinates;
+    if(desiredTime) orderExist.desiredTime=desiredTime;
+    if(desiredDate) orderExist.desiredDate=desiredDate;
+
+
     const updatedOrder = await orderExist.save();
     return res.status(201).send({
       success: true,
@@ -259,7 +271,7 @@ const acquireOrderController = async (req, res) => {
 
 const finishWorkController = async (req, res) => {
   try {
-    const { ordId } = req.body;
+    const { ordId } = req.params;
     const order = await orderModel.findById(ordId);
     order.status = "completed";
 
@@ -281,6 +293,27 @@ const finishWorkController = async (req, res) => {
     });
   }
 };
+
+const inProgressWorkController = async (req, res) => {
+  try {
+    const { ordId } = req.params;
+    const order = await orderModel.findById(ordId);
+    order.status = "in progress";
+    await order.save();
+
+    res.status(200).send({
+      success: true,
+      message: "Work in progress ",
+      order,
+    });
+  } catch (error) {
+    return res.status(500).send({
+      success: false,
+      message: "Error in  inProgressWorkController api ",
+      error: error.message,
+    });
+  }
+};
 module.exports = {
   getAllServiceOrders,
   getServiceOrderByStatus,
@@ -290,4 +323,5 @@ module.exports = {
   acquireOrderController,
   finishWorkController,
   getNearestOrders,
+  inProgressWorkController
 };

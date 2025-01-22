@@ -4,7 +4,7 @@ const { createServController, getServByCatController } = require("../Controllers
 const router = express.Router();
 
 
-router.post('/create-serv/:categoryId', signIn, isAdmin, createServController);
+router.post('/create-serv/:category', signIn, isAdmin, createServController);
 router.get('/servCat/:catId', signIn, isAdmin, getServByCatController);
 
 module.exports = router;
