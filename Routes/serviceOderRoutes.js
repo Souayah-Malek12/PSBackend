@@ -1,12 +1,13 @@
 const express = require("express");
 const { signIn, isAdmin } = require("../Middlewares/authMiddlware");
-const { passOrderController, updateOrderController, getAllServiceOrders, getServiceOrderByStatus, deleteOrderController, getNearestOrders } = require("../Controllers/ServiceOrder");
+const { passOrderController, updateOrderController, getAllServiceOrders, getServiceOrderByStatus, deleteOrderController, getNearestOrders, acceptOrderController } = require("../Controllers/ServiceOrder");
 
 const router = express.Router();
 
 router.post('/:sId', signIn,passOrderController)
 
 router.put('/updateServ/:orderId', signIn, updateOrderController)
+router.put('/acceptOrd/:orderId', signIn, acceptOrderController)
 
 router.get('/all-orders', signIn, isAdmin , getAllServiceOrders);
 router.delete('/:ordId', signIn,deleteOrderController)

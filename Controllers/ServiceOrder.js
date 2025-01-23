@@ -314,6 +314,27 @@ const inProgressWorkController = async (req, res) => {
     });
   }
 };
+
+const acceptOrderController =async(req, res)=> {
+  try{
+    const {orderId} = req.params;
+    console.log(orderId);
+
+
+      const acceptedOrder = await orderModel.findByIdAndUpdate(orderId, { status : "Pending"}, {new :true}) 
+      return res.status(200).send({
+        success : true ,
+        message :' Order accepted Successfully',
+        acceptedOrder
+      })
+  }catch(error){
+    return res.status(500).send({
+      success: false,
+      message: "Error in  acceptOrderController api ",
+      error: error.message,
+    });
+  }
+}
 module.exports = {
   getAllServiceOrders,
   getServiceOrderByStatus,
@@ -323,5 +344,6 @@ module.exports = {
   acquireOrderController,
   finishWorkController,
   getNearestOrders,
-  inProgressWorkController
+  inProgressWorkController,
+  acceptOrderController
 };
