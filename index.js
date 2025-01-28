@@ -26,6 +26,8 @@ const io = require("socket.io")(5001, {
 })
 
 let users = [];
+let workers =[];
+let orders = [];
 io.on('connection', socket=>{
     console.log(socket.id)
     socket.on('addUser', userId=>{
@@ -37,6 +39,36 @@ io.on('connection', socket=>{
         }
        
     })
+
+    socket.on('addWorkers', worker=>{
+        const workerExist = workers.find(user =>user.worker.id === worker.id)
+        if(!workerExist){
+            const w = {worker , socketId: socket.id};
+            workers.push(w);
+        }
+        console.log("wokers list",workers)
+       
+    })
+
+    socket.on('sendOrder', ({order })=>{
+        orders.push(order)
+        console.log("Order",order)
+        const receiverWorker = workers.filter((w) => w.worker.profession === order.category);
+    if (receiverWorker.length>0) {
+        // Emit the order to the specific worker
+        receiverWorker.forEach( worker => {
+        io.to(worker.socketId).emit('getOrder', { order });
+            })
+    }else {
+        console.log('No workers available');
+
+    }
+    })
+    socket.on("disconnect", ()=>{
+        workers = workers.filter(worker => worker.socketId !== socket.id)
+    })
+    
+
 
     socket.on('sendMessage',  ({ conversationId, senderId , message , rId  })=>{
         const receiver = users.find(user => user.userId === rId);
@@ -59,6 +91,7 @@ io.on('connection', socket=>{
         io.emit('getUsers', users)
     })    
 })
+module.exports = {io};
 //end of socket part
 app.get('/',(req, res)=>{
     res.send("Hello to project");
@@ -77,3 +110,6 @@ app.use('/api/serv', require('./Routes/serviceRoutes'));
 app.use('/api/worker', require('./Routes/workersRoutes'))
 
 app.use('/api/conversation', require('./Routes/ConversationRoutes'))
+
+
+module.exports = {}

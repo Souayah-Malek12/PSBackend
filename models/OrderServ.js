@@ -48,10 +48,11 @@ const OrderServSchema = mongoose.Schema({
     },
     acceptedAt: {
         type: Date,
-        default: Date.now,
+        default: null,
     },
     finishedAt: {
         type: Date,
+        default: null
     },
 });
 

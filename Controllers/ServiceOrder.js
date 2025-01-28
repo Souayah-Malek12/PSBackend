@@ -1,7 +1,7 @@
+const { io } = require("../index");
 const orderModel = require("../models/OrderServ");
 const serviceModel = require("../models/Service");
 const userModel = require("../models/User");
-;
 
 const getNearestOrders = async (req, res) => {
     const { coordinates } = req.body;   //got from login and setted in local storge in the back end
@@ -106,13 +106,11 @@ const passOrderController = async (req, res) => {
   try {
     const { sId } = req.params;
     let { details, coordinates, category, desiredTime, desiredDate } = req.body;
-
     const date = new Date(desiredDate);
     const time = new Date(desiredTime);
     const now = new Date();
 
     const clientId = req.user.id;
-    console.log(coordinates);
     if (
       !Array.isArray(coordinates.coordinates) ||
       coordinates.coordinates.length != 2
@@ -151,7 +149,7 @@ const passOrderController = async (req, res) => {
       desiredTime: time,
       desiredDate: date,
     });
-
+    
     return res.status(201).send({
       success: true,
       message:
@@ -174,7 +172,7 @@ const deleteOrderController = async (req, res) => {
     const order = orderModel.findById(ordId);
     if(order.status !='Pending'){
       return res.status(409).send({
-        success : treu,
+        success : true,
         message : "Order already in charge , can't be deleted",
 
       })
@@ -253,6 +251,7 @@ const acquireOrderController = async (req, res) => {
     }
     order.workerId = req.user.id;
     order.status = "Accepted";
+    order.date = Date.now();
     worker.availibilty = 1;
     await order.save();
     return res.status(201).send({
