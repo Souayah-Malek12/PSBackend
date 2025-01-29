@@ -28,6 +28,7 @@ const io = require("socket.io")(5001, {
 let users = [];
 let workers =[];
 let orders = [];
+let acquiredOrds = [];
 io.on('connection', socket=>{
     console.log(socket.id)
     socket.on('addUser', userId=>{
@@ -52,7 +53,7 @@ io.on('connection', socket=>{
 
     socket.on('sendOrder', ({order })=>{
         orders.push(order)
-        console.log("Order",order)
+        console.log("Orders",orders)
         const receiverWorker = workers.filter((w) => w.worker.profession === order.category);
     if (receiverWorker.length>0) {
         // Emit the order to the specific worker
@@ -64,6 +65,21 @@ io.on('connection', socket=>{
 
     }
     })
+
+    socket.on("acquireOrder", ({acquiredOrd})=> {
+        console.log("Liste of my orders efore ", acquiredOrds);
+
+     acquiredOrds.push(acquiredOrd)
+     console.log("Liste of my orders efore ", acquiredOrds);
+
+     console.log("acquiredOrd", acquiredOrd)
+
+     const newOrdsListe = orders.filter((ord) => ord.details !== acquiredOrd.order.details);
+
+     console.log("Liste of New order after acquiring ", newOrdsListe);
+
+    })
+
     socket.on("disconnect", ()=>{
         workers = workers.filter(worker => worker.socketId !== socket.id)
     })
