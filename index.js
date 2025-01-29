@@ -78,6 +78,7 @@ io.on('connection', socket=>{
 
      console.log("Liste of New order after acquiring ", newOrdsListe);
 
+
     })
 
     socket.on("disconnect", ()=>{
