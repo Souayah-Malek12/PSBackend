@@ -59,6 +59,7 @@ io.on('connection', socket=>{
         // Emit the order to the specific worker
         receiverWorker.forEach( worker => {
         io.to(worker.socketId).emit('getOrder', { order });
+        console.log("sednde Order ######",order)
             })
     }else {
         console.log('No workers available');
@@ -79,6 +80,30 @@ io.on('connection', socket=>{
      console.log("Liste of New order after acquiring ", newOrdsListe);
 
 
+    })
+
+    let bids =[];
+    socket.on("bid", (OrdBid)=>{
+        
+        bids.push(OrdBid);
+        console.log("bid?",OrdBid);
+
+       // console.log("tabs?",bids);
+
+        let min =null
+
+        if(bids.length>0){
+           // if(min===null ){ min = bids[0]}
+            const minBid = bids.reduce((min, current)=>{
+                console.log("minininnni", min)
+               return  parseFloat(current.price) <= parseFloat(min.price) ? current :  min
+                
+            }, bids[0])
+            console.log("acquired with min " , minBid);
+            io.to(OrdBid.socketId).emit("acquiredorder",(minBid))
+            console.log("fiisnsnnsnnsns", minBid)
+        }
+        
     })
 
     socket.on("disconnect", ()=>{
