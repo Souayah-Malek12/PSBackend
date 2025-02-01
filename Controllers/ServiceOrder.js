@@ -4,18 +4,21 @@ const serviceModel = require("../models/Service");
 const userModel = require("../models/User");
 
 const getNearestOrders = async (req, res) => {
-    const { coordinates } = req.body;   //got from login and setted in local storge in the back end
+    const { coordinates } = req.query;   //got from login and setted in local storge in the back end
     const catId = await userModel.findById(req.user.id);
-    
+    console.log("coordinates",coordinates)
+    parsedCoordinates = JSON.parse(coordinates);
+    console.log("Parsedcoordinates",parsedCoordinates)
+
      // Check if coordinates are provided and in the correct format
-    if (!coordinates || coordinates.length !== 2) {
+    if (!parsedCoordinates || parsedCoordinates.length !== 2) {
         return res.status(400).json({
             success: false,
             message: 'Invalid coordinates format. Ensure coordinates are [longitude, latitude].'
         });
     }
 
-    const [longitude, latitude] = coordinates; 
+    const [longitude, latitude] = parsedCoordinates; 
     try {
         const nearestOrders = await orderModel.find({
             status: 'Pending',
