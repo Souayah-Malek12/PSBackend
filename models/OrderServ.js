@@ -7,6 +7,12 @@ const OrderServSchema = mongoose.Schema({
     details: {
         type: String,
     },
+    minVal :{
+        type: Number
+    },
+    maxVal : {
+        type: Number
+    },
     coordinates: {
         type: {
             type: String, // GeoJSON object type

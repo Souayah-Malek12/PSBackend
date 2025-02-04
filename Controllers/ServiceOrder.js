@@ -35,8 +35,8 @@ const getNearestOrders = async (req, res) => {
         }).sort({ "coordinates": 1 }) // Sort by proximity (closest first)
 
         if (nearestOrders.length === 0) {
-            return res.status(404).json({
-                success: false,
+            return res.status(200).json({
+                success: true,
                 message: 'No pending orders found near the worker.'
             });
         }
@@ -50,7 +50,8 @@ const getNearestOrders = async (req, res) => {
         console.error(error);
         return res.status(500).json({
             success: false,
-            message: 'Error in getNearestOrders API.'
+            message: 'Error in getNearestOrders API.',
+            message2: error.message
         });
     }
 };
@@ -108,7 +109,7 @@ const getServiceOrderByStatus = async (req, res) => {
 const passOrderController = async (req, res) => {
   try {
     const { sId } = req.params;
-    let { details, coordinates, category, desiredTime, desiredDate } = req.body;
+    let { details, coordinates, category, minVal, maxVal,desiredTime, desiredDate } = req.body;
     const date = new Date(desiredDate);
     const time = new Date(desiredTime);
     const now = new Date();
@@ -148,6 +149,8 @@ const passOrderController = async (req, res) => {
       details,
       coordinates,
       category,
+      minVal,
+      maxVal,
       clientId,
       desiredTime: time,
       desiredDate: date,

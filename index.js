@@ -53,6 +53,7 @@ io.on('connection', socket=>{
 
     socket.on('sendOrder', ({order })=>{
         orders.push(order)
+        console.log("******recived ONE******",orders)
         console.log("Orders",orders)
         const receiverWorker = workers.filter((w) => w.worker.profession === order.category);
     if (receiverWorker.length>0) {
@@ -67,44 +68,39 @@ io.on('connection', socket=>{
     }
     })
 
-    socket.on("acquireOrder", ({acquiredOrd})=> {
-        console.log("Liste of my orders efore ", acquiredOrds);
-
-     acquiredOrds.push(acquiredOrd)
-     console.log("Liste of my orders efore ", acquiredOrds);
-
-     console.log("acquiredOrd", acquiredOrd)
-
-     const newOrdsListe = orders.filter((ord) => ord.details !== acquiredOrd.order.details);
-
-     console.log("Liste of New order after acquiring ", newOrdsListe);
-
-
-    })
+    
 
     let bids =[];
     socket.on("bid", (OrdBid)=>{
         
-        bids.push(OrdBid);
-        console.log("bid?",OrdBid);
+        const categoryId = OrdBid?.order?.category;
+
+        const existingCat = bids.find((bid)=>(bid.categoryId === categoryId))
+        if(existingCat){
+            existingCat.bids.push(OrdBid)
+        }else{
+            bids.push({ categoryId , bids :[OrdBid]})
+        }
+
+        console.log("bid?",bids);
 
        // console.log("tabs?",bids);
 
-        let min =null
 
         if(bids.length>0){
            // if(min===null ){ min = bids[0]}
-            const minBid = bids.reduce((min, current)=>{
-                console.log("minininnni", min)
-               return  parseFloat(current.price) <= parseFloat(min.price) ? current :  min
-                
-            }, bids[0])
+           const minBid = bids.flatMap((cat) => cat.bids)
+           .reduce((min, current) => parseFloat(current.order.price) < parseFloat(min.order.price) ? current : min);
+   
             console.log("acquired with min " , minBid);
-            io.to(OrdBid.socketId).emit("acquiredorder",(minBid))
+            if(minBid){
+            io.to(OrdBid.socketId).emit("acquiredOrder",(minBid))
+            }
             console.log("fiisnsnnsnnsns", minBid)
         }
         
     })
+ 
 
     socket.on("disconnect", ()=>{
         workers = workers.filter(worker => worker.socketId !== socket.id)
