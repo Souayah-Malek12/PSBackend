@@ -70,37 +70,44 @@ io.on('connection', socket=>{
 
     
 
-    let bids =[];
-    socket.on("bid", (OrdBid)=>{
-        
-        const categoryId = OrdBid?.order?.category;
+    let bids = [];
+let bidTimeout = null;
+const GRACE_PERIOD = 20000;
 
-        const existingCat = bids.find((bid)=>(bid.categoryId === categoryId))
-        if(existingCat){
-            existingCat.bids.push(OrdBid)
-        }else{
-            bids.push({ categoryId , bids :[OrdBid]})
-        }
+socket.on("bid", (OrdBid) => {
+  const categoryId = OrdBid?.order?.category;
 
-        console.log("bid?",bids);
+  const existingCat = bids.find((bid) => bid.categoryId === categoryId);
+  if (existingCat) {
+    existingCat.bids.push(OrdBid);
+  } else {
+    bids.push({ categoryId, bids: [OrdBid] });
+  }
+  console.log("Updated bids:", bids);
 
-       // console.log("tabs?",bids);
+  if (bids.length > 0) {
+    const allBids = bids.flatMap((cat) => cat.bids);
 
+    const minBid = allBids.reduce((min, current) =>
+      parseFloat(current.price) < parseFloat(min.price) ? current : min
+    );
 
-        if(bids.length>0){
-           // if(min===null ){ min = bids[0]}
-           const minBid = bids.flatMap((cat) => cat.bids)
-           .reduce((min, current) => parseFloat(current.order.price) < parseFloat(min.order.price) ? current : min);
-   
-            console.log("acquired with min " , minBid);
-            if(minBid){
-            io.to(OrdBid.socketId).emit("acquiredOrder",(minBid))
-            }
-            console.log("fiisnsnnsnnsns", minBid)
-        }
-        
-    })
- 
+    console.log("Lowest bid:", minBid);
+
+    if (bidTimeout) clearTimeout(bidTimeout);
+
+    bidTimeout = setTimeout(() => {
+      console.log("Final winner:", minBid);
+      if (minBid) {
+        io.to(minBid.socketId).emit("acquiredOrder", minBid);
+      }
+
+      bids = [];
+      bidTimeout = null;
+    }, GRACE_PERIOD);
+  }
+});
+
 
     socket.on("disconnect", ()=>{
         workers = workers.filter(worker => worker.socketId !== socket.id)
