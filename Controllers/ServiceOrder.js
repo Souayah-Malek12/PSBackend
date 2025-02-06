@@ -249,7 +249,7 @@ const acquireOrderController = async (req, res) => {
       });
     }
     const worker = await userModel.findById(req.user.id);
-    if (worker?.availibilty != 0) {
+    if (!worker?.availibilty) {
       return res.status(400).send({
         success: false,
         message: "Job acquired for an available worker Only",

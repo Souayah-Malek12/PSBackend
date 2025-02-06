@@ -72,7 +72,7 @@ io.on('connection', socket=>{
 
     let bids = [];
 let bidTimeout = null;
-const GRACE_PERIOD = 20000;
+const GRACE_PERIOD = 10000;
 
 socket.on("bid", (OrdBid) => {
   const categoryId = OrdBid?.order?.category;
