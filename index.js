@@ -100,6 +100,9 @@ socket.on("bid", (OrdBid) => {
       console.log("Final winner:", minBid);
       if (minBid) {
         io.to(minBid.socketId).emit("acquiredOrder", minBid);
+        const data = minBid.price;
+        socket.emit("bidEnd", data);
+        console.log(data)
       }
 
       bids = [];
