@@ -145,6 +145,7 @@ const getAllWrokers =async (req, res)=>{
   const deleteUserController = async(req, res)=>{
     try{
     const {userId} = req.params;
+    console.log(userId)
     const user = await userModel.findById(userId);
     if(!user){
       return res.status(404).json({

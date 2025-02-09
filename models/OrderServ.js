@@ -39,8 +39,8 @@ const OrderServSchema = mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ["Unaccepted","Pending", "Accepted", "in progress", "completed"],
-        default: "Unaccepted",
+        enum: ["Pending", "Accepted", "in progress", "completed"],
+        default: "Pending",
     },
     desiredTime: {
         type: Date,

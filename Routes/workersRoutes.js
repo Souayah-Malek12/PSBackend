@@ -11,7 +11,7 @@ router.get('/all-unaccepted', signIn, isAdmin, getAllUnacceptedEmp);
 router.get('/all-one/:userId', signIn, isAdmin, getById);
 
 
-router.delete('/delete-one/:userId', signIn, isAdmin, deleteUserController);
+router.delete('/delete-one/:userId', signIn,  deleteUserController);
 router.get('/all-workers', signIn, isAdmin, getAllWrokers);
 
 router.put('/acquireOrd/:ordId', signIn, acquireOrderController)

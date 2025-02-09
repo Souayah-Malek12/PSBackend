@@ -42,6 +42,33 @@ const getServByCatController = async(req, res)=>{
   }
   }
 
- 
+  const deleteServiceController = async (req, res) => {
+    try {
+      const { servId } = req.body;
+  
+      const deletedServ = await serviceModel.findByIdAndDelete(servId);
+  
+      if (!deletedServ) {
+        return res.status(404).json({
+          success: false,
+          message: "Service not found",
+        });
+      }
+  
+      return res.status(200).json({
+        success: true,
+        message: "Service deleted successfully",
+        deletedService: deletedServ
+      });
+  
+    } catch (err) {
+      return res.status(500).json({
+        success: false,
+        message: "Error in deleteServiceController API",
+        error: err.message,
+      });
+    }
+  };
+  
 
-  module.exports = {getServByCatController, createServController}
+  module.exports = {getServByCatController, createServController, deleteServiceController}

@@ -1,10 +1,11 @@
 const userModel = require("../models/User")
+const orderModel = require('../models/OrderServ')
 
-
-const getAllClients =async(req, res)=>{
+const getAllUsers =async(req, res)=>{
     try{
-      const clientsList = await userModel.find({role : "Client"});
-      if(!clientsList){
+      const {searchedR} = req.params;
+      const clientsList = await userModel.find({role : searchedR});
+      if(clientsList.length ===0){
         return res.status(404).json({
           success: true,
           message: "Clients List is empty",
@@ -25,6 +26,6 @@ const getAllClients =async(req, res)=>{
     }
   }
 
+  
 
-
-module.exports = {getAllClients}
+module.exports = {getAllUsers}

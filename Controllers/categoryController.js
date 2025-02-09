@@ -45,4 +45,29 @@ const createCateController = async(req, res)=>{
 }
 }
 
-module.exports = {getAllCategory, createCateController}
+const deletecategoryController = async(req, res)=>{
+  try{
+    const {catId} = req.params;
+    const cat = await serviceCat.findById(catId)
+    if(!cat){
+        return res.status(404).json({
+          success: false,
+          message: "Catgeory not found  ",
+          
+        }); 
+      }
+      const deletedCat = await serviceCat.deleteOne({_id : catId})
+      return res.status(200).json({
+        success: true,
+        message: "Category  deleted Successfully",
+        deletedCat
+      }); 
+}catch(err){
+  return  res.status(201).send({
+    success : false,
+    message : "Error in  deletecategoryController api ",
+    error : err.message
+})
+}
+}
+module.exports = {getAllCategory, createCateController, deletecategoryController}

@@ -1,10 +1,12 @@
 const express = require("express");
 const { signIn, isAdmin } = require("../Middlewares/authMiddlware");
-const { createServController, getServByCatController } = require("../Controllers/ServiceController");
+const { createServController, getServByCatController, deleteServiceController } = require("../Controllers/ServiceController");
 const router = express.Router();
 
 
-router.post('/create-serv/:category', signIn, isAdmin, createServController);
-router.get('/servCat/:catId', signIn, isAdmin, getServByCatController);
+router.post('/create-serv/:category', signIn,  createServController);
+router.get('/servCat/:catId', signIn,  getServByCatController);
+router.delete('/delServ', signIn,  deleteServiceController);
+
 
 module.exports = router;

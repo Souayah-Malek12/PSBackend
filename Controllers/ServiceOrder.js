@@ -175,10 +175,18 @@ const passOrderController = async (req, res) => {
 const deleteOrderController = async (req, res) => {
   try {
     const { ordId } = req.params;
-    const order = orderModel.findById(ordId);
+    const order = await orderModel.findById(ordId);
+
+    if (!order) {
+      return res.status(404).send({
+        success: false,
+        message: "Order not found",
+      });
+    }
+    
     if(order.status !='Pending'){
       return res.status(409).send({
-        success : true,
+        success : false,
         message : "Order already in charge , can't be deleted",
 
       })
@@ -357,26 +365,30 @@ const inProgressWorkController = async (req, res) => {
   }
 };
 
-const acceptOrderController =async(req, res)=> {
+const getMyordersController = async(req, res)=>{
   try{
-    const {orderId} = req.params;
-    console.log(orderId);
-
-
-      const acceptedOrder = await orderModel.findByIdAndUpdate(orderId, { status : "Pending"}, {new :true}) 
-      return res.status(200).send({
-        success : true ,
-        message :' Order accepted Successfully',
-        acceptedOrder
-      })
-  }catch(error){
-    return res.status(500).send({
+    const {idCli} = req.params ;
+    const ordsList = await orderModel.find({clientId : idCli});
+    if(ordsList===0){
+      return res.status(404).json({
+        success: true,
+        message: " No orders already",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      message: "My orders List",
+      ordsList
+    });
+  }catch(err){
+    return res.status(500).json({
       success: false,
-      message: "Error in  acceptOrderController api ",
-      error: error.message,
+      message: "Error in get all Clients user  Api",
+      error: err.message,
     });
   }
 }
+
 module.exports = {
   getAllServiceOrders,
   getServiceOrderByStatus,
@@ -387,6 +399,6 @@ module.exports = {
   finishWorkController,
   getNearestOrders,
   inProgressWorkController,
-  acceptOrderController,
-  getAcquiredOrders
+  getAcquiredOrders,
+  getMyordersController
 };
