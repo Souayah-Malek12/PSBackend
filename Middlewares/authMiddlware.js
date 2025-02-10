@@ -45,4 +45,20 @@ const isServiceClient = async(req, res, next)=>{
 
     }
 }
-module.exports = {isAdmin, signIn, isServiceClient};
+
+const isWorker = async(req, res, next)=>{
+    try{
+        const user= await userModel.findById(req.user.id);
+        if(!user || user.role !== "Worker" ){
+            return res.status(401).send({
+                success: false,
+                message: "UnAuthorized Access(Only Client Service)",
+              }); 
+        }
+        next();
+    }catch(err){
+        console.log("isAdmin middleware error",err)
+
+    }
+}
+module.exports = {isAdmin, signIn, isServiceClient, isWorker};
