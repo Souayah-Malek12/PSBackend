@@ -7,7 +7,7 @@ const { createServController } = require("../Controllers/ServiceController");
 const router = express.Router();
 
 router.post('/create-cat', signIn,  createCateController);
-router.get('/all-cat', signIn,  getAllCategory );
+router.get('/all-cat',  getAllCategory );
 router.delete('/del-cat/:catId', signIn,  deletecategoryController );
 
 

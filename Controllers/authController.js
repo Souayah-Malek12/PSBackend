@@ -24,9 +24,7 @@ const registreController = async (req, res) => {
           if (coordinates.length<2) {
             return res.send({ error: "Cordinates are required Latitude and longitude is Required" });
           }
-          if (!profession) {
-            return res.send({ error: "Profession is Required" });
-          }
+          
           if (!role) {
             return res.send({ error: "Role is Required" });
           }
@@ -54,7 +52,6 @@ const registreController = async (req, res) => {
                 password: hashedPassword,
                 phone,
                 coordinates,
-                profession,
                 role,
                 isAcceptedByAdmin : true,
                 acceptanceDate : Date.now()
