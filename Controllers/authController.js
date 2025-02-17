@@ -87,12 +87,23 @@ const registreController = async (req, res) => {
     }}
     const loginController = async(req, res)=>{
         try{
-            const {email, password} = req.body;
-            const userExist = await userModel.findOne({ email})                                                                                                       
+            const {email, password, role} = req.body;
+            console.log("rrr", role)
+            console.log("{email, password, role} ", {email, password, role} )
+            const userExist = await userModel.findOne({ email}) 
+            console.log("aaa", userExist);
+                                                                                                                  
         if(!userExist){
             return res.status(404).send({
                 success : false,
                 message: "Check your email/password",
+            })
+        }
+        if(role.toLowerCase() !== userExist.role.toLowerCase()){
+            return res.status(401).send({   
+                success : false,
+                message: "Check  role",
+                
             })
         }
         

@@ -108,7 +108,7 @@ const getServiceOrderByStatus = async (req, res) => {
 
 const passOrderController = async (req, res) => {
   try {
-    const { sId } = req.params;
+    const {sId} = req.params
     let { details, coordinates, category, minVal, maxVal,desiredTime, desiredDate } = req.body;
     const date = new Date(desiredDate);
     const time = new Date(desiredTime);
@@ -141,6 +141,7 @@ const passOrderController = async (req, res) => {
         error: err.message,
       });
     }
+    
     const serv = await serviceModel.findById(sId);
     const name = serv.name;
 
@@ -315,7 +316,7 @@ const getAcquiredOrders = async (req, res) => {
 const finishWorkController = async (req, res) => {
   try {
     const { ordId } = req.params;
-    const order = await orderModel.findById(ordId);
+    const order = await orderModel.find(ordId);
     order.status = "completed";
     order.finishedAt = Date.now();
 
@@ -337,6 +338,26 @@ const finishWorkController = async (req, res) => {
     });
   }
 };
+
+const getMyDoneOrdersController = async (req, res)=>{
+  try{
+    const wId = req.user.id;
+    const orders = await orderModel.find({status : "completed" , workerId : wId})
+    if(orders.length !==0){
+      return res.status(200).send({
+        success: true,
+        message: "My orders ",
+        orders
+      });
+    }
+  }catch(error){
+    return res.status(500).send({
+      success: false,
+      message: "Error in  getMyDoneOrdersController api ",
+      error: error.message,
+    });
+  }
+} 
 
 const inProgressWorkController = async (req, res) => {
   try {
@@ -390,6 +411,7 @@ const getMyordersController = async(req, res)=>{
 }
 
 module.exports = {
+  getMyDoneOrdersController,
   getAllServiceOrders,
   getServiceOrderByStatus,
   passOrderController,

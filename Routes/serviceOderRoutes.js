@@ -3,7 +3,8 @@ const { signIn, isAdmin } = require("../Middlewares/authMiddlware");
 const { passOrderController, updateOrderController, getAllServiceOrders, 
     getServiceOrderByStatus, deleteOrderController, getNearestOrders, 
      getAcquiredOrders, 
-     getMyordersController} = require("../Controllers/ServiceOrder");
+     getMyordersController,
+     getMyDoneOrdersController} = require("../Controllers/ServiceOrder");
 
 const router = express.Router();
 
@@ -17,6 +18,8 @@ router.get('/serv-order/:state', signIn,  getServiceOrderByStatus);
 router.get('/NearbyOrds', signIn, getNearestOrders);
 router.get('/acqOrds/:wId', signIn,  getAcquiredOrders);
 router.get('/myOrds/:idCli', signIn,  getMyordersController);
+router.get('/myDoneOrders',  signIn, getMyDoneOrdersController);
+
 
 
 
