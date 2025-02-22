@@ -248,6 +248,10 @@ const updateOrderController = async (req, res) => {
 const acquireOrderController = async (req, res) => {
   try {
     const { ordId } = req.params;
+    console.log("ordId", ordId);
+    console.log("ereqqqq",req.user.id)
+
+    console.log()
     const order = await orderModel
       .findById(ordId)
       .populate("clientId", "name phone");
@@ -257,15 +261,10 @@ const acquireOrderController = async (req, res) => {
         message: "Order already unvailable",
       });
     }
+    
     const worker = await userModel.findById(req.user.id);
-    if (!worker?.availibilty) {
-      return res.status(400).send({
-        success: false,
-        message: "Job acquired for an available worker Only",
-      });
-    }
     order.workerId = req.user.id;
-    order.status = "Accepted";
+    orderstatus = "Accepted";
     order.acceptedAt = Date.now();
     worker.availibilty = 1;
     await order.save();
@@ -274,6 +273,8 @@ const acquireOrderController = async (req, res) => {
       message: "Order acquired Successfully",
       order,
     });
+    console.log("ordersssss",order);
+
   } catch (error) {
     return res.status(500).send({
       success: false,
@@ -316,7 +317,7 @@ const getAcquiredOrders = async (req, res) => {
 const finishWorkController = async (req, res) => {
   try {
     const { ordId } = req.params;
-    const order = await orderModel.find(ordId);
+    const order = await orderModel.findOne({ _id: ordId });
     order.status = "completed";
     order.finishedAt = Date.now();
 
