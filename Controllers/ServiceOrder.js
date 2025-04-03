@@ -264,7 +264,7 @@ const acquireOrderController = async (req, res) => {
     
     const worker = await userModel.findById(req.user.id);
     order.workerId = req.user.id;
-    orderstatus = "Accepted";
+    order.status = "Accepted";
     order.acceptedAt = Date.now();
     worker.availibilty = 1;
     await order.save();

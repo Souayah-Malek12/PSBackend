@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.post('/create-serv/:category', signIn,  createServController);
 router.get('/servCat/:catId',   getServByCatController);
-router.delete('/delServ', signIn,  deleteServiceController);
+router.delete('/delServ/:servId', signIn,  deleteServiceController);
 
 
 module.exports = router;

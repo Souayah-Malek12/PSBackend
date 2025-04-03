@@ -44,8 +44,8 @@ const getServByCatController = async(req, res)=>{
 
   const deleteServiceController = async (req, res) => {
     try {
-      const { servId } = req.body;
-  
+      const { servId } = req.params;
+      console.log(servId)
       const deletedServ = await serviceModel.findByIdAndDelete(servId);
   
       if (!deletedServ) {
