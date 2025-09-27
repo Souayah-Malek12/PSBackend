@@ -5,18 +5,30 @@ const connectDb = async () => {
         // Set strictQuery to false to prepare for Mongoose 7
         mongoose.set('strictQuery', false);
         
-        // Add connection options for better compatibility
+        // Updated connection options for MongoDB Driver 6.x+
         const connectionOptions = {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
             serverSelectionTimeoutMS: 5000,
-            socketTimeoutMS: 45000
+            socketTimeoutMS: 45000,
+            family: 4 // Use IPv4, skip trying IPv6
         };
         
-        await mongoose.connect(process.env.DB, connectionOptions);
-        console.log(`Connected to database successfully ${mongoose.connection.host}`);
+        // Add retry logic for production
+        let retries = 5;
+        while (retries) {
+            try {
+                await mongoose.connect(process.env.DB, connectionOptions);
+                console.log(`Connected to database successfully ${mongoose.connection.host}`);
+                return;
+            } catch (err) {
+                console.error(`Connection attempt ${6 - retries} failed:`, err.message);
+                retries--;
+                if (retries === 0) throw err;
+                // Wait for 5 seconds before retrying
+                await new Promise(res => setTimeout(res, 5000));
+            }
+        }
     } catch (err) {
-        console.error("DB connection error:", err);
+        console.error("DB connection failed after retries:", err);
         // Exit process with failure if database connection fails
         process.exit(1);
     }
