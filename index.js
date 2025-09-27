@@ -5,7 +5,14 @@ const app = express();
 
 
 
-app.use(cors())
+const corsOptions = {
+  origin: ['https://souayah-malek12.github.io', 'http://localhost:5173', 'http://localhost:3000'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}
+
+app.use(cors(corsOptions))
 
 
 require('dotenv').config();
@@ -19,9 +26,10 @@ app.listen(PORT,()=>{
 connectDb();
 //io 
 const io = require("socket.io")(5001, {
-    cors :{
-        origin : ['http://localhost:5173','http://localhost:3000'],
-        methods: ["GET", "POST"]
+    cors: {
+        origin: ['https://souayah-malek12.github.io', 'http://localhost:5173', 'http://localhost:3000'],
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        credentials: true
     }
 })
 
