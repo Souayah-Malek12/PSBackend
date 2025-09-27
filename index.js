@@ -40,13 +40,24 @@ const PORT = process.env.PORT || 3001;
 // Create HTTP server
 const server = http.createServer(app);
 
-// Create Socket.IO server
+// Create Socket.IO server with enhanced configuration
 const io = require("socket.io")(server, {
   cors: {
     origin: allowedOrigins,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
     credentials: true
+  },
+  // Enable WebSocket transport by default with fallback to polling
+  transports: ['websocket', 'polling'],
+  // Enable HTTP long-polling fallback
+  allowEIO3: true,
+  // Increase ping timeout for better reliability
+  pingTimeout: 60000,
+  // Enable HTTP compression
+  perMessageDeflate: {
+    threshold: 1024,
+    clientNoContextTakeover: true,
   }
 });
 
