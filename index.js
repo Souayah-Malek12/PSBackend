@@ -1,3 +1,4 @@
+const gopd = require('gopd'); // ✅ from node_modules
 const express = require("express");
 const { connectDb } = require("./Config/dbConfig");
 const cors = require("cors");
