@@ -1,24 +1,24 @@
-const userModel = require("../models/User")
-const  {io} =require("socket.io-client")
+const userModel = require("../models/User");
 
-const socket = io("http://localhost:5000");
+// Socket.IO instance will be passed from the server
+let ioInstance = null;
 
-socket.on("new order", (order)=>{
-  console.log("New Order Received:", order);
-
-})
+// Function to set the io instance
+const setIO = (io) => {
+  ioInstance = io;
   
-socket.on("all orders", (orders) => {
-  console.log("All Orders:", orders);
-});
-
-socket.on("connect", () => {
-  console.log("Connected to server as a worker");
-});
-
-socket.on("disconnect", () => {
-  console.log("Disconnected from server");
-});
+  ioInstance.on('connection', (socket) => {
+    console.log('Client connected to WorkersController');
+    
+    socket.on('new order', (order) => {
+      console.log('New Order Received:', order);
+    });
+    
+    socket.on('disconnect', () => {
+      console.log('Client disconnected from WorkersController');
+    });
+  });
+};
 
 const getActiveWorkers = async(req, res)=>{
     try{
@@ -168,4 +168,12 @@ const getAllWrokers =async (req, res)=>{
       });
     }
   }
-module.exports = {getActiveWorkers, getAllWrokers, getAllClientServicesEmp, getAllUnacceptedEmp, getById, deleteUserController}
+module.exports = {
+  setIO,
+  getActiveWorkers, 
+  getAllWrokers, 
+  getAllClientServicesEmp, 
+  getAllUnacceptedEmp, 
+  getById, 
+  deleteUserController
+}

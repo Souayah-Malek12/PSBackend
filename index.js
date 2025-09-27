@@ -1,53 +1,71 @@
 const express = require("express");
-const {connectDb} = require("./Config/dbConfig")
-const cors = require("cors")
+const { connectDb } = require("./Config/dbConfig");
+const cors = require("cors");
+const http = require('http');
 const app = express();
-
-
 
 const corsOptions = {
   origin: ['https://souayah-malek12.github.io', 'http://localhost:5173', 'http://localhost:3000'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
-}
+};
 
-app.use(cors(corsOptions))
-
-
+app.use(cors(corsOptions));
 require('dotenv').config();
 app.use(express.json());
 
-const PORT = 5000
-app.listen(PORT,()=>{
-    console.log(`app running on port : ${PORT}`)
-})
+const PORT = process.env.PORT || 5000;
+const server = http.createServer(app);
 
+// Create Socket.IO server
+const io = require("socket.io")(server, {
+  cors: {
+    origin: ['https://souayah-malek12.github.io', 'http://localhost:5173', 'http://localhost:3000'],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    credentials: true
+  }
+});
+
+// Initialize database connection
 connectDb();
-//io 
-const io = require("socket.io")(5001, {
-    cors: {
-        origin: ['https://souayah-malek12.github.io', 'http://localhost:5173', 'http://localhost:3000'],
-        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        credentials: true
-    }
-})
 
+// Import and initialize WorkersController with io instance
+const { setIO } = require('./Controllers/WorkersController');
+setIO(io);
+
+// Start the server
+server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+
+// Global variables
 let users = [];
-let workers =[];
+let workers = [];
 let orders = [];
 let acquiredOrds = [];
-io.on('connection', socket=>{
-    console.log(socket.id)
-    socket.on('addUser', userId=>{
-        const userExist = users.find(user =>user.userId === userId)
-        if(!userExist){
-            const user = {userId, socketId: socket.id};
+
+// Socket.IO connection handler
+io.on('connection', socket => {
+    console.log('New client connected:', socket.id);
+    
+    socket.on('addUser', userId => {
+        const userExist = users.find(user => user.userId === userId);
+        if (!userExist) {
+            const user = { userId, socketId: socket.id };
             users.push(user);
             io.emit('getUsers', users);
+            console.log(`User ${userId} connected with socket ID: ${socket.id}`);
         }
-       
-    })
+    });
+    
+    // Handle disconnection
+    socket.on('disconnect', () => {
+        users = users.filter(user => user.socketId !== socket.id);
+        io.emit('getUsers', users);
+        console.log('Client disconnected:', socket.id);
+        workers = workers.filter(worker => worker.socketId !== socket.id)
+    });
 
     socket.on('addWorkers', worker=>{
         const workerExist = workers.find(user =>user.worker.id === worker.id)
