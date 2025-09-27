@@ -32,7 +32,9 @@
     "has-proto": "^1.0.1",
     "has-symbols": "^1.0.3",
     "hasown": "^2.0.0",
-    "side-channel-map": "^1.0.0"
+    "side-channel-map": "^1.0.0",
+    "function-bind": "^1.1.2",
+    "has-property-descriptors": "^1.0.2"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"
