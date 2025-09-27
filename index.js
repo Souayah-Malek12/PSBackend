@@ -72,52 +72,37 @@ server.on('error', (error) => {
   }
 });
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ error: 'Not Found' });
-});
+// Initialize database connection
+connectDb();
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error('Error:', err.stack);
-  res.status(500).json({
-    error: 'Internal Server Error',
-    message: process.env.NODE_ENV === 'production' ? 'Something went wrong!' : err.message
-  });
-});
-
+// Import and initialize WorkersController with io instance
 const { setIO } = require('./Controllers/WorkersController');
 setIO(io);
 
-// Connect to database and start server
-const startServer = async () => {
-  try {
-    await connectDb();
-    const serverInstance = server.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-      console.log('Press Ctrl+C to stop the server');
-    });
+// Start the server
+const serverInstance = server.listen(PORT, '0.0.0.0', () => {
+    const address = serverInstance.address();
+    console.log(`Server running on port ${address.port}`);    
+    console.log('Press Ctrl+C to stop the server');
+});
 
-    // Handle process termination
-    process.on('SIGTERM', () => {
-      console.log('SIGTERM received. Shutting down gracefully');
-      serverInstance.close(() => {
+// Handle server errors
+serverInstance.on('error', (error) => {
+    if (error.code === 'EADDRINUSE') {
+        console.error(`Port ${PORT} is already in use. Please use a different port.`);
+    } else {
+        console.error('Server error:', error);
+    }
+    process.exit(1);
+});
+
+// Handle process termination
+process.on('SIGTERM', () => {
+    console.log('SIGTERM received. Shutting down gracefully');
+    serverInstance.close(() => {
         console.log('Server closed');
         process.exit(0);
-      });
     });
-
-    return serverInstance;
-  } catch (error) {
-    console.error('Failed to start server:', error);
-    process.exit(1);
-  }
-};
-
-// Start the server
-startServer().catch(error => {
-  console.error('Fatal error during server startup:', error);
-  process.exit(1);
 });
 
 // Global variables
