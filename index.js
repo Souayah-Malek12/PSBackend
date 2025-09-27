@@ -15,7 +15,9 @@ app.use(cors(corsOptions));
 require('dotenv').config();
 app.use(express.json());
 
-const PORT = process.env.PORT || 3001; // Changed default port to 3001
+const PORT = process.env.PORT || 3001;
+
+// Create HTTP server
 const server = http.createServer(app);
 
 // Create Socket.IO server
@@ -24,6 +26,17 @@ const io = require("socket.io")(server, {
     origin: ['https://souayah-malek12.github.io/PSfrontend', 'http://localhost:5173', 'http://localhost:3000'],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true
+  }
+});
+
+// Handle server errors
+server.on('error', (error) => {
+  if (error.code === 'EADDRINUSE') {
+    console.error(`Port ${PORT} is already in use. Please use a different port.`);
+    process.exit(1);
+  } else {
+    console.error('Server error:', error);
+    process.exit(1);
   }
 });
 
