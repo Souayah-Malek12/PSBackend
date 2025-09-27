@@ -7,8 +7,8 @@ const getNearestOrders = async (req, res) => {
     const { coordinates } = req.query;   //got from login and setted in local storge in the back end
     const catId = await userModel.findById(req.user.id);
     console.log("coordinates",coordinates)
-    parsedCoordinates = JSON.parse(coordinates);
-    console.log("Parsedcoordinates",parsedCoordinates)
+    const parsedCoordinates = JSON.parse(coordinates.trim());
+    
 
      // Check if coordinates are provided and in the correct format
     if (!parsedCoordinates || parsedCoordinates.length !== 2) {
