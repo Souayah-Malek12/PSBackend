@@ -4,13 +4,33 @@ const cors = require("cors");
 const http = require('http');
 const app = express();
 
+const allowedOrigins = [
+  'https://souayah-malek12.github.io',
+  'https://souayah-malek12.github.io/PSfrontend',
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'https://ps-backend-beta.vercel.app'
+];
+
 const corsOptions = {
-  origin: ['https://souayah-malek12.github.io/PSfrontend', 'http://localhost:5173', 'http://localhost:3000'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+  credentials: true,
+  optionsSuccessStatus: 200 // Some legacy browsers choke on 204
 };
 
+// Enable CORS pre-flight across the board
+app.options('*', cors(corsOptions));
 app.use(cors(corsOptions));
 require('dotenv').config();
 app.use(express.json());
@@ -23,8 +43,9 @@ const server = http.createServer(app);
 // Create Socket.IO server
 const io = require("socket.io")(server, {
   cors: {
-    origin: ['https://souayah-malek12.github.io/PSfrontend', 'http://localhost:5173', 'http://localhost:3000'],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    origin: allowedOrigins,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
     credentials: true
   }
 });
