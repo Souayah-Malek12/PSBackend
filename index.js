@@ -15,7 +15,7 @@ const allowedOrigins = [
   'https://souayah-malek12.github.io/PSfrontend',
   'http://localhost:5173',
   'http://localhost:3000',
-  'https://ps-backend.onrender.com'
+  'https://your-app.up.railway.app'
 ];
 
 const corsOptions = {
