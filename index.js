@@ -15,7 +15,7 @@ const allowedOrigins = [
   'https://souayah-malek12.github.io/PSfrontend',
   'http://localhost:5173',
   'http://localhost:3000',
-  'https://ps-backend-beta.vercel.app'
+  'https://ps-backend.onrender.com'
 ];
 
 const corsOptions = {
