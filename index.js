@@ -3,7 +3,7 @@ const express = require("express");
 const { connectDb } = require("./Config/dbConfig");
 const cors = require("cors");
 const http = require('http');
-const gopd = require('gopd'); // ✅ from node_modules
+const gopd = require('gopd'); 
 
 require('dotenv').config();
 
@@ -15,7 +15,7 @@ const allowedOrigins = [
   'https://souayah-malek12.github.io/PSfrontend',
   'http://localhost:5173',
   'http://localhost:3000',
-  'https://your-app.up.railway.app'
+  'https://ps-backend-beta.vercel.app'
 ];
 
 const corsOptions = {
