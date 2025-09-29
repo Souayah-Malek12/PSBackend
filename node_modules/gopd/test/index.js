@@ -1,8 +1,7 @@
 'use strict';
 
 var test = require('tape');
-var gOPD = require('../');
-
+var gOPD = require('./gOPD');
 test('gOPD', function (t) {
 	t.test('supported', { skip: !gOPD }, function (st) {
 		st.equal(typeof gOPD, 'function', 'is a function');
